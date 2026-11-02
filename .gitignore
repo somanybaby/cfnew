@@ -1,3 +1,5 @@
 dist/
 __pycache__/
 node_modules/
+rust-worker/target/
+rust-worker/build/
