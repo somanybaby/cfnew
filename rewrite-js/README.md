@@ -1,6 +1,6 @@
 # JavaScript 独立重写版
 
-最新状态：用户已停止后续部署与测试，现将源码及混淆文件[归档保存](./archive/2026-11-02/README.md)。最后一次 `few.176278.xyz` 访问返回 HTTP 500 / `1101`，线上不可用，根因未确认；本次仅上传 GitHub，不操作 Cloudflare。第三方混淆的历史过程见[处理记录](./THIRD_PARTY_OBFUSCATION.md)。
+最新状态：上游原版 Worker 返回 `1101`；Pages 默认域名可实际转发，但 few 自定义域名初始化期间返回 `522`。已按用户条件删除本次全部部署及 few 绑定、路由和 DNS，继续停止部署；见[原版对照记录](./UPSTREAM_CONTROL.md)。[源码及混淆归档](./archive/2026-11-02/README.md)保留。
 
 入口是 `src/worker.mjs`，不导入 `_worker.js`、`subscriptions/` 或 `rust-worker/`。原实现保留以便对照。协议依据公开格式重新实现；Trojan 的标准 SHA-224 使用固定版本的 `@noble/hashes`。用户已要求删除 `cfnew-best` 并停止部署，相关线上资源已移除，本地代码保留；过程见 [历史部署记录](./DEPLOYMENT_BEST.md)。
 
