@@ -1,0 +1,14 @@
+{
+  "name": "cfnew-readable-subscriptions",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test subscriptions/rename.test.mjs",
+    "build:readable": "node scripts/build-readable.mjs",
+    "test:bundle": "node --experimental-vm-modules --test subscriptions/bundle.test.mjs"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2",
+    "javascript-obfuscator": "4.1.1"
+  }
+}

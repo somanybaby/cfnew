@@ -50,7 +50,18 @@ GET 同一路径可读取记录；POST 替换整份记录。结果存于原 `C` 
 
 ## 部署和回退
 
-Workers 使用 ES Module 多文件部署，入口 `subscriptions/worker.mjs`。需要同时包含以下模块（Wrangler 可自动打包这些本地 import）：
+推荐先构建单文件混淆版，输出可直接粘贴到 Worker 编辑器的 `dist/_worker.js`：
+
+```bash
+npm ci
+npm test
+npm run build:readable
+npm run test:bundle
+```
+
+构建先打包为 ES Module，再混淆标识符和字符串。禁用动态代码生成、自防护、调试干扰、控制流平坦化和死代码注入；保留 Workers 需要的静态 import/export 与 `fetch` 属性。`dist/SHA256SUMS.txt` 提供校验值。混淆版通过禁止动态代码生成的隔离运行测试，验证首页、配置鉴权和订阅改名。
+
+开发调试也可使用 ES Module 多文件部署，入口 `subscriptions/worker.mjs`。需要同时包含以下模块（Wrangler 可自动打包这些本地 import）：
 
 ```text
 _worker.js
