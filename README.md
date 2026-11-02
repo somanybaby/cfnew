@@ -1,15 +1,18 @@
 # CFnew 精简内核
 
-此分支提供[按实测出口整理订阅](./subscriptions/README.md)和独立的 [Rust/Wasm 核心](./rust-worker/README.md)。
+此分支新增[JavaScript 独立重写版](./rewrite-js/README.md)，目前仅保存在本地等待审阅，没有部署。旧版[出口订阅兼容层](./subscriptions/README.md)和 [Rust/Wasm 核心](./rust-worker/README.md)保留供对照。
 
 | 目录或文件 | 语言与用途 |
 | --- | --- |
 | `_worker.js` | 上游 JavaScript ES Module 核心 |
+| `rewrite-js/src/` | 全新独立 JavaScript 实现，配置、协议、出站和订阅分别维护 |
 | `rust-worker/src/` | Rust 核心，编译为 WebAssembly |
 | `subscriptions/` | JavaScript 订阅格式与出口命名兼容层 |
 | `scripts/` | JavaScript 构建与混淆工具 |
 
 Rust 版目前处于开发验证阶段，线上验证尚未通过，暂停部署。安装 Rust 构建工具后，可在仓库根目录执行 `npm run verify:rust`，完成 Rust 单元测试、全新编译、混淆打包、Wasm 运行测试和订阅测试。该命令只做本地构建与验证。
+
+新 JS 版使用 `npm run verify:rewrite` 做本地验证，输出到 `dist/rewrite-js/`，不导入任何旧内核或订阅代码，不会自动发布。
 
 下方为上游 JavaScript 版本的使用说明。
 

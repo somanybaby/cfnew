@@ -1,0 +1,2 @@
+# Local testing: copy to .dev.vars and replace this dummy UUID with a new private UUID.
+u="00000000-1111-4222-8333-444444444444"

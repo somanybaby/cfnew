@@ -10,11 +10,20 @@
     "test:rust-runtime": "node --test rust-worker/runtime.test.mjs",
     "verify:rust": "cargo test --manifest-path rust-worker/Cargo.toml --lib --locked && npm run build:rust && npm run test:rust-runtime && npm test",
     "test:bundle": "node --experimental-vm-modules --test subscriptions/bundle.test.mjs",
-    "test:runtime": "node --test subscriptions/workerd.test.mjs"
+    "test:runtime": "node --test subscriptions/workerd.test.mjs",
+    "build:rewrite": "node scripts/build-rewrite.mjs",
+    "test:rewrite": "node --test rewrite-js/test/*.test.mjs",
+    "test:rewrite-runtime": "node --test rewrite-js/test/runtime.integration.mjs",
+    "verify:rewrite": "npm run test:rewrite && npm run build:rewrite && npm run test:rewrite-runtime && npm test"
   },
   "devDependencies": {
     "esbuild": "^0.28.2",
     "javascript-obfuscator": "4.1.1",
-    "miniflare": "^4.20260730.0"
+    "miniflare": "^4.20260730.0",
+    "miniflare-rewrite": "npm:miniflare@5.20261101.0-beta",
+    "wrangler": "4.156.1"
+  },
+  "dependencies": {
+    "@noble/hashes": "2.4.0"
   }
 }
