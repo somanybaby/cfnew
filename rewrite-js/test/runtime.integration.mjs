@@ -8,6 +8,7 @@ import { USER, SERVER, vless, trojan, inbox } from './helpers.mjs';
 const base = 'https://' + SERVER;
 const endpoint = base + '/' + USER;
 const buildDirectory = process.env.CFNEW_REWRITE_DIST || 'dist/rewrite-js';
+const artifacts = process.env.CFNEW_REWRITE_ARTIFACT ? [process.env.CFNEW_REWRITE_ARTIFACT] : ['worker.mjs', 'worker.min.mjs', 'worker.obfuscated.mjs'];
 async function startServer(servers, sockets, handler) {
   const server = createServer(socket => {
     sockets.add(socket); socket.on('error', () => {}); socket.on('close', () => sockets.delete(socket)); handler(socket);
@@ -54,7 +55,7 @@ async function proxyPort(servers, sockets, kind, targetPort) {
   });
 }
 
-for (const artifact of ['worker.mjs', 'worker.min.mjs', 'worker.obfuscated.mjs']) {
+for (const artifact of artifacts) {
   test('workerd local integration: ' + artifact, { timeout: 60000 }, async t => {
     const sockets = new Set(), servers = []; let accepted = 0;
     const echoPort = await startServer(servers, sockets, socket => { accepted++; socket.on('data', chunk => socket.write(chunk)); });
