@@ -9,14 +9,15 @@ const result = await build({
   external: ['cloudflare:sockets'], minify: true, charset: 'ascii', legalComments: 'none',
 });
 const bundled = result.outputFiles[0].text;
+// Literal escaping avoids a module-level decoder/rotation loop in the edge runtime.
 const output = JavaScriptObfuscator.obfuscate(bundled, {
   target: 'browser-no-eval', seed: randomInt(1, 0x7fffffff), compact: true,
-  identifierNamesGenerator: 'hexadecimal', renameGlobals: false, renameProperties: false,
+  identifierNamesGenerator: 'mangled-shuffled', renameGlobals: true, renameProperties: false,
   controlFlowFlattening: false, deadCodeInjection: false,
   debugProtection: false, selfDefending: false,
-  stringArray: true, stringArrayThreshold: 1, stringArrayEncoding: ['base64'],
-  splitStrings: true, splitStringsChunkLength: 6, transformObjectKeys: true,
-  stringArrayCallsTransform: false, unicodeEscapeSequence: true,
+  stringArray: false,
+  splitStrings: true, splitStringsChunkLength: 4, transformObjectKeys: true,
+  unicodeEscapeSequence: true,
 }).getObfuscatedCode();
 if (/\beval\s*\(|\bnew\s+Function\s*\(/.test(output)) throw new Error('Dynamic code generation is not supported in Workers');
 await mkdir('dist', { recursive: true });
