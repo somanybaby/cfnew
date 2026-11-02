@@ -1,6 +1,6 @@
 # CFnew 精简内核
 
-此分支新增[JavaScript 独立重写版](./rewrite-js/README.md)，其高混淆版已获用户授权发布至 `best.176278.xyz`，具体状态见[部署记录](./rewrite-js/DEPLOYMENT_BEST.md)。旧版[出口订阅兼容层](./subscriptions/README.md)和 [Rust/Wasm 核心](./rust-worker/README.md)保留供对照。
+此分支包含[JavaScript 独立重写版](./rewrite-js/README.md)。用户已要求删除 `cfnew-best` 并停止部署；Worker、域名绑定及对应路由均已移除，本地代码保留，具体状态见[历史部署记录](./rewrite-js/DEPLOYMENT_BEST.md)。旧版[出口订阅兼容层](./subscriptions/README.md)和 [Rust/Wasm 核心](./rust-worker/README.md)保留供对照。
 
 | 目录或文件 | 语言与用途 |
 | --- | --- |

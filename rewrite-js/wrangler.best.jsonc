@@ -1,4 +1,6 @@
 {
+  // Historical configuration: cfnew-best has been deleted at the user's request.
+  // Do not deploy again without new explicit user authorization.
   "$schema": "../node_modules/wrangler/config-schema.json",
   "name": "cfnew-best",
   "account_id": "03fd90a18a98cfef389b07dbe4e92aa6",

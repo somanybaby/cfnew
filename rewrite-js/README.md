@@ -1,6 +1,6 @@
 # JavaScript 独立重写版
 
-入口是 `src/worker.mjs`，不导入 `_worker.js`、`subscriptions/` 或 `rust-worker/`。原实现保留以便对照。协议依据公开格式重新实现；Trojan 的标准 SHA-224 使用固定版本的 `@noble/hashes`。用户随后已授权高混淆版部署到 `best.176278.xyz`，发布与线上验证情况见 [部署记录](./DEPLOYMENT_BEST.md)。
+入口是 `src/worker.mjs`，不导入 `_worker.js`、`subscriptions/` 或 `rust-worker/`。原实现保留以便对照。协议依据公开格式重新实现；Trojan 的标准 SHA-224 使用固定版本的 `@noble/hashes`。用户已要求删除 `cfnew-best` 并停止部署，相关线上资源已移除，本地代码保留；过程见 [历史部署记录](./DEPLOYMENT_BEST.md)。
 
 代码重构和混淆不能保证 Cloudflare 不识别该程序，也不能解除平台限制。本地测试验证程序行为，不验证线上账户状态、实际出口或联通网络速度。
 
