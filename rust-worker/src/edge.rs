@@ -230,9 +230,18 @@ fn preferred_rows(raw: &str) -> Vec<Value> {
         .filter_map(|row| {
             let (target, name) = row.trim().split_once('#').unwrap_or((row.trim(), ""));
             let (host, port) = protocol::endpoint(target, 443)?;
+            let (host, port) = protocol::specified_endpoint(&host, port.into())?;
             Some(json!({"ip":host,"port":port,"name":if name.is_empty(){target}else{name}}))
         })
         .collect()
+}
+fn preferred_target(value: &Value) -> Option<(String, u16)> {
+    let host = value.get("ip")?.as_str()?;
+    let port = match value.get("port") {
+        None | Some(Value::Null) => 443,
+        Some(port) => port.as_u64()?,
+    };
+    protocol::specified_endpoint(host, port)
 }
 async fn preferred(
     req: &mut Request,
@@ -255,7 +264,10 @@ async fn preferred(
     if ![Method::Post, Method::Delete].contains(&req.method()) {
         return json_response(json!({"error":"Method not allowed"}), 405);
     }
-    let body = body_limited(req, 1048576).await?;
+    let body = match body_limited(req, 1048576).await {
+        Ok(body) => body,
+        Err(_) => return json_response(json!({"error":"Preferred request too large"}), 413),
+    };
     let body: Value = match serde_json::from_slice(&body) {
         Ok(v) => v,
         Err(_) => return json_response(json!({"error":"Invalid JSON"}), 400),
@@ -268,11 +280,12 @@ async fn preferred(
         if body.get("all") == Some(&Value::Bool(true)) {
             rows.clear();
         } else {
-            let host = body.get("ip").and_then(Value::as_str).unwrap_or("");
-            let port = body.get("port").and_then(Value::as_u64).unwrap_or(443);
-            if host.is_empty() {
-                return json_response(json!({"error":"IP required"}), 400);
-            }
+            let Some((host, port)) = preferred_target(&body) else {
+                return json_response(
+                    json!({"error":"Valid IP/domain and integer port required"}),
+                    400,
+                );
+            };
             rows.retain(|r| r["ip"] != host || r["port"] != port);
             if rows.len() == before {
                 return json_response(json!({"error":"Not Found"}), 404);
@@ -284,16 +297,16 @@ async fn preferred(
         } else {
             vec![body]
         };
+        if items.is_empty() {
+            return json_response(json!({"error":"Preferred entries required"}), 400);
+        }
         for item in items {
-            let host = item.get("ip").and_then(Value::as_str).unwrap_or("");
-            let port = item.get("port").and_then(Value::as_u64).unwrap_or(443);
-            let name = item.get("name").and_then(Value::as_str).unwrap_or(host);
-            if port == 0
-                || port > 65535
-                || name.len() > 200
-                || name.contains(['#', ',', '\r', '\n'])
-                || protocol::endpoint(&format!("{host}:{port}"), 443).is_none()
-            {
+            let Some((host, port)) = preferred_target(&item) else {
+                errors.push(json!({"reason":"Invalid preferred endpoint"}));
+                continue;
+            };
+            let name = item.get("name").and_then(Value::as_str).unwrap_or(&host);
+            if name.len() > 200 || name.contains(['#', ',', '\r', '\n']) {
                 errors.push(json!({"reason":"Invalid preferred endpoint"}));
                 continue;
             }
@@ -310,9 +323,11 @@ async fn preferred(
         .iter()
         .map(|r| {
             format!(
-                "{}:{}#{}",
-                r["ip"].as_str().unwrap_or(""),
-                r["port"],
+                "{}#{}",
+                protocol::authority(
+                    r["ip"].as_str().unwrap_or(""),
+                    r["port"].as_u64().unwrap_or(443) as u16
+                ),
                 r["name"].as_str().unwrap_or("")
             )
         })
@@ -321,8 +336,10 @@ async fn preferred(
     if raw.len() > 262144 {
         return json_response(json!({"error":"Preferred list too large"}), 413);
     }
-    original.insert("yx".into(), json!(raw));
-    persist(env, &original).await?;
+    if req.method() == Method::Delete || !added.is_empty() {
+        original.insert("yx".into(), json!(raw));
+        persist(env, &original).await?;
+    }
     json_response(
         if req.method() == Method::Delete {
             json!({"success":true,"deletedCount":before-rows.len()})

@@ -8,6 +8,7 @@
     "build:strong": "node scripts/build-readable.mjs --strong",
     "build:rust": "node scripts/build-rust.mjs",
     "test:rust-runtime": "node --test rust-worker/runtime.test.mjs",
+    "verify:rust": "cargo test --manifest-path rust-worker/Cargo.toml --lib --locked && npm run build:rust && npm run test:rust-runtime && npm test",
     "test:bundle": "node --experimental-vm-modules --test subscriptions/bundle.test.mjs",
     "test:runtime": "node --test subscriptions/workerd.test.mjs"
   },

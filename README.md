@@ -1,6 +1,17 @@
 # CFnew 精简内核
 
-此分支增加可选的[按实测出口整理订阅](./subscriptions/README.md)：统一地区、线路、编号与协议名称；不修改下方上游精简内核和代理逻辑。
+此分支提供[按实测出口整理订阅](./subscriptions/README.md)和独立的 [Rust/Wasm 核心](./rust-worker/README.md)。
+
+| 目录或文件 | 语言与用途 |
+| --- | --- |
+| `_worker.js` | 上游 JavaScript ES Module 核心 |
+| `rust-worker/src/` | Rust 核心，编译为 WebAssembly |
+| `subscriptions/` | JavaScript 订阅格式与出口命名兼容层 |
+| `scripts/` | JavaScript 构建与混淆工具 |
+
+Rust 版目前处于开发验证阶段，线上验证尚未通过，暂停部署。安装 Rust 构建工具后，可在仓库根目录执行 `npm run verify:rust`，完成 Rust 单元测试、全新编译、混淆打包、Wasm 运行测试和订阅测试。该命令只做本地构建与验证。
+
+下方为上游 JavaScript 版本的使用说明。
 
 [![内核版本](https://img.shields.io/badge/内核-2026.10.17.2-blue)](https://github.com/byJoey/cfnew/releases/latest)
 [![Cloudflare Workers / Pages](https://img.shields.io/badge/Cloudflare-Workers%20%2F%20Pages-F38020)](https://developers.cloudflare.com/workers/)

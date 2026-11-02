@@ -2,6 +2,8 @@
 
 此实现把协议解析、鉴权、配置接口和 TCP/UDP DNS 转发改写为 Rust，编译为 WebAssembly。构建不导入旧 `_worker.js`。Workers SDK 的 JavaScript 绑定及现有订阅格式/出口命名层继续使用 JavaScript；这些胶水代码在打包后重新混淆。
 
+当前为开发验证版本：线上验证未通过，部署尝试已暂停，先在仓库内维护和验证代码。
+
 ## 支持范围
 
 - VLESS over WebSocket、Trojan over WebSocket、VLESS XHTTP stream-one。
@@ -21,19 +23,17 @@ Rust 实现不是对 JavaScript 的逐字翻译：流式缓冲、关闭时机及
 ```sh
 rustup target add wasm32-unknown-unknown
 cargo install worker-build --version 0.8.7 --locked
-cd rust-worker
-cargo test --lib
-worker-build --release
-cd ..
 npm ci
-npm run build:rust
-npm run test:rust-runtime
-npm test
+npm run verify:rust
 ```
+
+`verify:rust` 依次运行 Rust 单元测试、重新编译 Wasm、混淆打包、Wasm 集成测试和订阅测试；任一步失败即停止。`npm run build:rust` 自身也会先调用 `worker-build --release` 编译，避免把旧 Wasm 与新源码混装。构建和检查命令均不执行部署。
 
 发布构建启用 LTO、尺寸优化和 Wasm 调试信息移除；JavaScript 绑定/订阅层使用随机种子、RC4 字符串数组、长字符串拆分和名称混淆。不使用动态代码生成、自防护或调试干扰。编译和混淆不保证解除平台限制。
 
 产物位于 `dist/rust/`：`worker.mjs`、`index_bg.wasm` 和 `manifest.json`。部署时这两个模块必须同时上传，入口为 `worker.mjs`，Wasm 部分使用 `application/wasm`。保留原 UUID、KV、兼容日期及运行配置；先验证服务再切换域名。
+
+清单同时记录 Rust 源文件指纹和各模块的 SHA-256，以便核对源码与构建包。优选地址 API 接受带独立整数端口的 IPv6，自动规范化并使用方括号写入列表；错误或超范围端口不会导致误删已有条目，全部无效的新增请求不会改写 KV。
 
 ## 验证
 

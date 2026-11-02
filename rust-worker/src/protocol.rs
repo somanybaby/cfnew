@@ -201,6 +201,31 @@ pub fn endpoint(value: &str, default: u16) -> Option<(String, u16)> {
     Some((host.to_owned(), port))
 }
 
+/// Normalize a host and a separately supplied JSON port without accepting host:port in host.
+pub fn specified_endpoint(host: &str, port: u64) -> Option<(String, u16)> {
+    let port = u16::try_from(port).ok().filter(|p| *p != 0)?;
+    let bare = host
+        .strip_prefix('[')
+        .and_then(|h| h.strip_suffix(']'))
+        .unwrap_or(host);
+    if let Ok(ip) = bare.parse::<Ipv6Addr>() {
+        return Some((ip.to_string(), port));
+    }
+    if host.contains(':') || host.contains(['[', ']']) {
+        return None;
+    }
+    let (host, _) = endpoint(host, port)?;
+    Some((host.to_ascii_lowercase(), port))
+}
+
+pub fn authority(host: &str, port: u16) -> String {
+    if host.contains(':') {
+        format!("[{host}]:{port}")
+    } else {
+        format!("{host}:{port}")
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -274,5 +299,27 @@ mod tests {
             parse(&[], &uuid_bytes(ID).unwrap(), ID, true, false),
             Err(ParseError::Incomplete)
         );
+    }
+    #[test]
+    fn separately_supplied_endpoints_have_canonical_ipv6_and_strict_ports() {
+        let bare = specified_endpoint("2001:0db8:0:0:0:0:0:1", 8443).unwrap();
+        assert_eq!(bare, ("2001:db8::1".into(), 8443));
+        assert_eq!(
+            specified_endpoint("[2001:db8::1]", 8443),
+            Some(bare.clone())
+        );
+        assert_eq!(authority(&bare.0, bare.1), "[2001:db8::1]:8443");
+        assert_eq!(
+            specified_endpoint("EXAMPLE.COM", 443),
+            Some(("example.com".into(), 443))
+        );
+        for (host, port) in [
+            ("example.com", 0),
+            ("example.com", 65536),
+            ("example.com:80", 443),
+            ("[example.com]", 443),
+        ] {
+            assert!(specified_endpoint(host, port).is_none());
+        }
     }
 }

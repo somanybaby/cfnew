@@ -33,6 +33,21 @@ test('Rust/Wasm authenticates config, preserves settings, and streams VLESS/Troj
     const wrong=await mf.dispatchFetch('https://worker.example/10000000-1111-4222-8333-444444444444/api/config');assert.equal(wrong.status,404);
     const invalid=await mf.dispatchFetch('https://worker.example/'+user+'/api/config',{method:'POST',body:JSON.stringify({u:'forbidden'})});assert.equal(invalid.status,400);
     const update=await mf.dispatchFetch('https://worker.example/'+user+'/api/config',{method:'POST',body:JSON.stringify({ena:'no'})});assert.equal(update.status,200);assert.equal(JSON.parse(await kv.get('c')).ena,'no');assert.equal(JSON.parse(await kv.get('c')).ispUnicom,'yes');
+    const preferredUrl='https://worker.example/'+user+'/api/preferred-ips';
+    assert.equal((await mf.dispatchFetch(preferredUrl)).status,403);
+    assert.equal((await mf.dispatchFetch('https://worker.example/'+user+'/api/config',{method:'POST',body:JSON.stringify({ae:'yes'})})).status,200);
+    const added=await mf.dispatchFetch(preferredUrl,{method:'POST',body:JSON.stringify({ip:'2001:0db8:0:0:0:0:0:1',port:8443,name:'IPv6'})});
+    assert.equal((await added.json()).added,1);
+    assert.equal(JSON.parse(await kv.get('c')).yx,'[2001:db8::1]:8443#IPv6');
+    const saved=JSON.parse(await kv.get('c'));await kv.put('c',JSON.stringify(saved,null,2));
+    const before=await kv.get('c'),version=await kv.get('c_ver');
+    const duplicate=await mf.dispatchFetch(preferredUrl,{method:'POST',body:JSON.stringify({ip:'[2001:db8::1]',port:8443})});assert.equal((await duplicate.json()).skipped,1);
+    const badDelete=await mf.dispatchFetch(preferredUrl,{method:'DELETE',body:JSON.stringify({ip:'2001:db8::1',port:-1})});assert.equal(badDelete.status,400);
+    const badAdd=await mf.dispatchFetch(preferredUrl,{method:'POST',body:JSON.stringify({ip:'example.com',port:'invalid'})});assert.equal((await badAdd.json()).success,false);
+    const oversized=await mf.dispatchFetch(preferredUrl,{method:'POST',body:'x'.repeat(1048577)});assert.equal(oversized.status,413);
+    assert.equal(await kv.get('c'),before);assert.equal(await kv.get('c_ver'),version);
+    const listed=await (await mf.dispatchFetch(preferredUrl)).json();assert.equal(listed.data[0].ip,'2001:db8::1');assert.equal(listed.data[0].port,8443);
+    const removed=await mf.dispatchFetch(preferredUrl,{method:'DELETE',body:JSON.stringify({ip:'2001:0db8:0:0:0:0:0:1',port:8443})});assert.equal((await removed.json()).deletedCount,1);assert.equal(JSON.parse(await kv.get('c')).yx,'');
     const invalidWs=await mf.dispatchFetch('https://worker.example/',{headers:{Upgrade:'websocket'}});
     invalidWs.webSocket.accept();const rejected=message(invalidWs.webSocket);const bad=vless(port);bad[1]=255;invalidWs.webSocket.send(bad);await assert.rejects(rejected,/closed before echo/);
     for(const [kind,header,reply] of [['vless',vless(port),Buffer.from([0,0])],['trojan',trojan(port),Buffer.alloc(0)]]) {
