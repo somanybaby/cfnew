@@ -5,6 +5,7 @@
   "scripts": {
     "test": "node --test subscriptions/rename.test.mjs",
     "build:readable": "node scripts/build-readable.mjs",
+    "build:strong": "node scripts/build-readable.mjs --strong",
     "test:bundle": "node --experimental-vm-modules --test subscriptions/bundle.test.mjs",
     "test:runtime": "node --test subscriptions/workerd.test.mjs"
   },

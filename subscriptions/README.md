@@ -62,6 +62,8 @@ npm run test:runtime
 
 构建先打包为 ES Module，再混淆局部及模块级标识符，转义字符串、拆分长字符串并转换对象键；每次构建使用新的随机种子，产物以 SHA-256 校验。字符串使用字面量转义，不引入全局字符串数组解码器或旋转循环。禁用动态代码生成、自防护、调试干扰、控制流平坦化和死代码注入；保留 Workers 需要的静态 import/export 与 `fetch` 属性。`dist/SHA256SUMS.txt` 提供校验值。混淆版通过禁止动态代码生成的隔离运行测试，验证首页、配置鉴权和订阅改名；另在 Miniflare / workerd 中使用 KV 重复验证首页和配置接口。混淆不能保证解决线上 1101；必须另外验证公网请求，API 上传成功和本地测试通过不代表服务已经恢复。
 
+需要更强混淆时执行 `npm run build:strong`，随后重新运行 `npm run test:bundle` 和 `npm run test:runtime`。强混淆增加 RC4 字符串编码、三层链式包装、部分控制流变换、少量死代码和数字表达式；不启用动态代码生成、自防护或调试干扰。强混淆产物更大，会增加初始化和运行开销，应以部署后的实际响应为准。`dist/build.json` 记录本次构建的模式、字节数和校验值。
+
 开发调试也可使用 ES Module 多文件部署，入口 `subscriptions/worker.mjs`。需要同时包含以下模块（Wrangler 可自动打包这些本地 import）：
 
 ```text
