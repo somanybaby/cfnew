@@ -1,5 +1,7 @@
 # CFnew 精简内核
 
+此分支增加可选的[按实测出口整理订阅](./subscriptions/README.md)：统一地区、线路、编号与协议名称；不修改下方上游精简内核和代理逻辑。
+
 [![内核版本](https://img.shields.io/badge/内核-2026.10.17.2-blue)](https://github.com/byJoey/cfnew/releases/latest)
 [![Cloudflare Workers / Pages](https://img.shields.io/badge/Cloudflare-Workers%20%2F%20Pages-F38020)](https://developers.cloudflare.com/workers/)
 
