@@ -57,9 +57,10 @@ npm ci
 npm test
 npm run build:readable
 npm run test:bundle
+npm run test:runtime
 ```
 
-构建先打包为 ES Module，再混淆标识符和字符串。禁用动态代码生成、自防护、调试干扰、控制流平坦化和死代码注入；保留 Workers 需要的静态 import/export 与 `fetch` 属性。`dist/SHA256SUMS.txt` 提供校验值。混淆版通过禁止动态代码生成的隔离运行测试，验证首页、配置鉴权和订阅改名。
+构建先打包为 ES Module，再混淆标识符和字符串。禁用动态代码生成、自防护、调试干扰、控制流平坦化和死代码注入；保留 Workers 需要的静态 import/export 与 `fetch` 属性。`dist/SHA256SUMS.txt` 提供校验值。混淆版通过禁止动态代码生成的隔离运行测试，验证首页、配置鉴权和订阅改名；另在 Miniflare / workerd 中使用 KV 重复验证首页和配置接口。
 
 开发调试也可使用 ES Module 多文件部署，入口 `subscriptions/worker.mjs`。需要同时包含以下模块（Wrangler 可自动打包这些本地 import）：
 
