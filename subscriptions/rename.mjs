@@ -4,7 +4,12 @@ const groupOrder = ['原生', '联通', '多线', '移动', '电信', '优选域
 const cityNames = { 'Los Angeles': '洛杉矶', 'San Jose': '圣何塞', 'San Francisco': '旧金山',
   'Seattle': '西雅图', 'Dallas': '达拉斯', 'Tokyo': '东京', 'Osaka': '大阪',
   'Singapore': '新加坡', 'Hong Kong': '香港', 'Seoul': '首尔', 'Frankfurt am Main': '法兰克福' };
-const regionNames = new Intl.DisplayNames(['zh-Hans'], { type: 'region' });
+// Keep global initialization independent of optional ICU APIs in edge runtimes.
+const regionNames = { US: '美国', CA: '加拿大', CN: '中国', HK: '香港', MO: '澳门', TW: '台湾',
+  JP: '日本', KR: '韩国', SG: '新加坡', MY: '马来西亚', TH: '泰国', VN: '越南', PH: '菲律宾',
+  ID: '印度尼西亚', IN: '印度', AU: '澳大利亚', NZ: '新西兰', GB: '英国', DE: '德国',
+  FR: '法国', NL: '荷兰', FI: '芬兰', SE: '瑞典', CH: '瑞士', ES: '西班牙', IT: '意大利',
+  RU: '俄罗斯', TR: '土耳其', AE: '阿联酋', BR: '巴西', MX: '墨西哥', ZA: '南非' };
 
 export function measurementKey(node) {
   return [node.protocol, node.transport, node.host.toLowerCase().replace(/^\[|\]$/g, ''), String(node.port || 443),
@@ -41,7 +46,7 @@ function actualRegion(node, labels, now) {
   if (!entry) return '出口待测';
   const age = now - Date.parse(entry.testedAt);
   if (!Number.isFinite(age) || age > 7 * 86400000 || age < -300000) return '出口待复测';
-  const country = regionNames.of(entry.countryCode);
+  const country = regionNames[entry.countryCode] || entry.countryCode;
   const city = cityNames[entry.city] || '';
   return country + (city && city !== country ? '·' + city : '') + '〔实测〕';
 }
