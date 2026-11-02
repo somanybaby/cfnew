@@ -12,6 +12,8 @@
     "test:bundle": "node --experimental-vm-modules --test subscriptions/bundle.test.mjs",
     "test:runtime": "node --test subscriptions/workerd.test.mjs",
     "build:rewrite": "node scripts/build-rewrite.mjs",
+    "build:rewrite-strong": "node scripts/build-rewrite.mjs --strong",
+    "verify:rewrite-strong": "node scripts/verify-rewrite-strong.mjs",
     "test:rewrite": "node --test rewrite-js/test/*.test.mjs",
     "test:rewrite-runtime": "node --test rewrite-js/test/runtime.integration.mjs",
     "verify:rewrite": "npm run test:rewrite && npm run build:rewrite && npm run test:rewrite-runtime && npm test"

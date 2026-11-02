@@ -1,0 +1,19 @@
+{
+  "$schema": "../node_modules/wrangler/config-schema.json",
+  "name": "cfnew-best",
+  "account_id": "03fd90a18a98cfef389b07dbe4e92aa6",
+  "main": "../dist/rewrite-js-strong/worker.obfuscated.mjs",
+  "no_bundle": true,
+  "compatibility_date": "2026-11-02",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": false,
+  "preview_urls": false,
+  "upload_source_maps": false,
+  "observability": { "enabled": true, "head_sampling_rate": 1, "logs": { "enabled": true, "invocation_logs": false } },
+  "kv_namespaces": [{ "binding": "C", "id": "ff7c5c4d4bd946ea86829896bcc14619" }],
+  "routes": [
+    { "pattern": "best.176278.xyz", "custom_domain": true },
+    { "pattern": "best.176278.xyz/*", "zone_id": "48110c9165b886f623b8dcd7e0aec0a6" }
+  ]
+  // u is an existing server-side secret. Do not replace it with a public vars value.
+}

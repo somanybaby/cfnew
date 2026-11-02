@@ -7,6 +7,7 @@ import { USER, SERVER, vless, trojan, inbox } from './helpers.mjs';
 
 const base = 'https://' + SERVER;
 const endpoint = base + '/' + USER;
+const buildDirectory = process.env.CFNEW_REWRITE_DIST || 'dist/rewrite-js';
 async function startServer(servers, sockets, handler) {
   const server = createServer(socket => {
     sockets.add(socket); socket.on('error', () => {}); socket.on('close', () => sockets.delete(socket)); handler(socket);
@@ -63,7 +64,7 @@ for (const artifact of ['worker.mjs', 'worker.min.mjs', 'worker.obfuscated.mjs']
       assert.equal(response.status, 200, await response.clone().text());
     };
     try {
-      mf = new Miniflare(convertV4MiniflareOptions({ name: 'rewrite-local', modules: true, scriptPath: 'dist/rewrite-js/' + artifact,
+      mf = new Miniflare(convertV4MiniflareOptions({ name: 'rewrite-local', modules: true, scriptPath: buildDirectory + '/' + artifact,
         compatibilityDate: '2026-11-02', compatibilityFlags: ['nodejs_compat'], bindings: { u: USER }, kvNamespaces: ['C'], log: new Log(LogLevel.ERROR) }));
       const kv = await mf.getKVNamespace('C'); await kv.put('c', JSON.stringify({ ev: 'yes', et: 'yes', ex: 'yes', ena: 'yes', dkby: 'yes' }));
       await t.test('root, authenticated API, locally generated subscriptions and KV mutation', async () => {
