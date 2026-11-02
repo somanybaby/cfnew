@@ -1,0 +1,26 @@
+{
+  "archivedOn": "2026-11-02",
+  "status": "archived; deployment stopped at user request",
+  "website": "https://obfuscator.io/legacy-playground",
+  "lastDeployment": {
+    "hostname": "few.176278.xyz",
+    "lastObservedStatus": 500,
+    "lastObservedError": 1101,
+    "usable": false,
+    "causeConfirmed": false
+  },
+  "files": {
+    "worker.readable.mjs": {
+      "bytes": 57631,
+      "sha256": "24390b06f3cd0322097e9704679a6ba00abfd34c3163f8264562bb49a74627cf"
+    },
+    "worker.obfuscated.mjs": {
+      "bytes": 246761,
+      "sha256": "582d357635c1eef73e7b31c319de9a40b87574c5125080957d5e800ff7280e0a"
+    },
+    "worker.website.raw.mjs": {
+      "bytes": 245604,
+      "sha256": "c4b14cb373aecf9a2c5d6937293bb05c44a1554214cb9193ec207468f09a309a"
+    }
+  }
+}

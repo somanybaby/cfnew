@@ -1,6 +1,6 @@
 # JavaScript 独立重写版
 
-最新状态：继续停止部署。已通过第三方网页混淆并完成本地验证，见[第三方处理记录及后续命名要求](./THIRD_PARTY_OBFUSCATION.md)。
+最新状态：用户已停止后续部署与测试，现将源码及混淆文件[归档保存](./archive/2026-11-02/README.md)。最后一次 `few.176278.xyz` 访问返回 HTTP 500 / `1101`，线上不可用，根因未确认；本次仅上传 GitHub，不操作 Cloudflare。第三方混淆的历史过程见[处理记录](./THIRD_PARTY_OBFUSCATION.md)。
 
 入口是 `src/worker.mjs`，不导入 `_worker.js`、`subscriptions/` 或 `rust-worker/`。原实现保留以便对照。协议依据公开格式重新实现；Trojan 的标准 SHA-224 使用固定版本的 `@noble/hashes`。用户已要求删除 `cfnew-best` 并停止部署，相关线上资源已移除，本地代码保留；过程见 [历史部署记录](./DEPLOYMENT_BEST.md)。
 

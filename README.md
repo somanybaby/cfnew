@@ -1,6 +1,6 @@
 # CFnew 精简内核
 
-此分支包含[JavaScript 独立重写版](./rewrite-js/README.md)。用户已要求删除 `cfnew-best` 并停止部署；Worker、域名绑定及对应路由均已移除，本地代码保留，具体状态见[历史部署记录](./rewrite-js/DEPLOYMENT_BEST.md)。旧版[出口订阅兼容层](./subscriptions/README.md)和 [Rust/Wasm 核心](./rust-worker/README.md)保留供对照。
+此分支保存[JavaScript 独立重写版](./rewrite-js/README.md)与[2026-11-02 单文件及网页混淆归档](./rewrite-js/archive/2026-11-02/README.md)。用户已停止后续部署与测试，本次只上传代码。最后一次 `few.176278.xyz` 访问返回 HTTP 500 / `1101`，线上不可用，根因未确认；此次 Worker 未删除。更早的 `cfnew-best` 已删除，见[历史记录](./rewrite-js/DEPLOYMENT_BEST.md)。旧版[出口订阅兼容层](./subscriptions/README.md)和 [Rust/Wasm 核心](./rust-worker/README.md)保留供对照。
 
 | 目录或文件 | 语言与用途 |
 | --- | --- |
